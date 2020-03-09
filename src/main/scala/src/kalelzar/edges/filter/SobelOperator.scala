@@ -1,8 +1,6 @@
-package src.kalelzar.edges
+package src.kalelzar.edges.filter
 
-import java.awt.image.BufferedImage
-
-object SobelEdgeDetector extends ImageFilter {
+object SobelOperator extends BidirectionalEdgeDetector(null, null) {
 
   private val horizontalMatrix = Seq(Seq(-1.0, -2.0, -1.0), Seq(0.0, 0.0, 0.0), Seq(1.0, 2.0, 1.0))
   private val horizontalConvolution = new Convolution(3, 3)
@@ -11,13 +9,11 @@ object SobelEdgeDetector extends ImageFilter {
   private val verticalMatrix = Seq(Seq(-1.0, 0.0, 1.0), Seq(-2.0, 0.0, 2.0), Seq(-1.0, 0.0, 1.0))
   private val verticalConvolution = new Convolution(3, 3)
   verticalConvolution.init(verticalMatrix)
-  private val bidirectionalEdgeDetector = new BidirectionalEdgeDetector(new ConvolutionImageFilter(horizontalConvolution),
-    new ConvolutionImageFilter(verticalConvolution))
 
-  override def filter(i: BufferedImage): BufferedImage = bidirectionalEdgeDetector(i)
+  reinit(new ConvolutionImageFilter(horizontalConvolution), new ConvolutionImageFilter(verticalConvolution))
 }
 
-object ReversedSobelEdgeDetector extends ImageFilter{
+object ReversedSobelOperator extends BidirectionalEdgeDetector(null, null) {
   private val horizontalMatrix = Seq(Seq(1.0, 2.0, 1.0), Seq(0.0, 0.0, 0.0), Seq(-1.0, -2.0, -1.0))
   private val horizontalConvolution = new Convolution(3, 3)
   horizontalConvolution.init(horizontalMatrix)
@@ -25,10 +21,8 @@ object ReversedSobelEdgeDetector extends ImageFilter{
   private val verticalMatrix = Seq(Seq(1.0, 0.0, -1.0), Seq(2.0, 0.0, -2.0), Seq(1.0, 0.0, -1.0))
   private val verticalConvolution = new Convolution(3, 3)
   verticalConvolution.init(verticalMatrix)
-  private val bidirectionalEdgeDetector = new BidirectionalEdgeDetector(new ConvolutionImageFilter(horizontalConvolution),
-    new ConvolutionImageFilter(verticalConvolution))
 
-  override def filter(i: BufferedImage): BufferedImage = bidirectionalEdgeDetector(i)
+  reinit(new ConvolutionImageFilter(horizontalConvolution), new ConvolutionImageFilter(verticalConvolution))
 }
 
-object BidirectionalSobelEdgeDetector extends BidirectionalEdgeDetector(SobelEdgeDetector, ReversedSobelEdgeDetector)
+object BidirectionalSobelEdgeDetector extends BidirectionalEdgeDetector(SobelOperator, ReversedSobelOperator)

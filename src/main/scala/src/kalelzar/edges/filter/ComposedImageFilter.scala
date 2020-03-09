@@ -1,4 +1,4 @@
-package src.kalelzar.edges
+package src.kalelzar.edges.filter
 
 import java.awt.image.BufferedImage
 

@@ -1,4 +1,4 @@
-package src.kalelzar.edges
+package src.kalelzar.edges.filter
 
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -7,7 +7,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 trait ImageFilter {
-  protected def clamp(d: Double): Int = if(d < 0) 0 else if(d > 255) 255 else d.toInt
+  protected def clamp(d: Double): Int = if (d < 0) 0 else if (d > 255) 255 else d.toInt
 
   def filter(i: BufferedImage): BufferedImage
   def apply(i: BufferedImage): BufferedImage = filter(i)
@@ -51,8 +51,29 @@ class AverageOfFilter(filter1: ImageFilter, filter2: ImageFilter) extends ImageF
 
 object ImageFilters {
 
-  val SobelEdgeDetector: ImageFilter = GaussianFilter.compose(src.kalelzar.edges.SobelEdgeDetector)
+  val SobelEdgeDetector: ImageFilter = GaussianFilter.compose(SobelOperator)
   val LaplaceEdgeDetector: ImageFilter = GaussianFilter.compose(LaplaceFilter)
+
+  val ThinnedSobelEdgeDetector: ImageFilter = GaussianFilter.compose(new ContinuousNonMaximumSuppressionFilter(SobelOperator))
+  val ReversedThinnedSobelEdgeDetector: ImageFilter = GaussianFilter.compose(new ContinuousNonMaximumSuppressionFilter(ReversedSobelOperator))
+
+  val ReversedSobelEdgeDetector: ImageFilter = GaussianFilter.compose(ReversedSobelOperator)
+  val ReversedLaplaceEdgeDetector: ImageFilter = GaussianFilter.compose(ReversedLaplaceFilter)
+
+  val DoubleSobelEdgeDetector: ImageFilter =
+    GaussianFilter.compose(new BidirectionalEdgeDetector(SobelOperator, ReversedSobelOperator))
+  val DoubleLaplaceEdgeDetector: ImageFilter =
+    GaussianFilter.compose(new BidirectionalEdgeDetector(LaplaceFilter, ReversedLaplaceFilter))
+
+  val DoubleThinnedSobelEdgeDetector: ImageFilter =
+    GaussianFilter.compose(new ContinuousNonMaximumSuppressionFilter(
+      new BidirectionalEdgeDetector(SobelOperator, ReversedSobelOperator)
+    ))
+
+  val DoubleThinnedLaplaceEdgeDetector: ImageFilter =
+    GaussianFilter.compose(new ContinuousNonMaximumSuppressionFilter(
+      new BidirectionalEdgeDetector(LaplaceFilter, ReversedLaplaceFilter)
+    ))
 
   def ThresholdSobelEdgeDetector(threshold: Int): ImageFilter = {
     SobelEdgeDetector.compose(new ThresholdFilter(threshold))

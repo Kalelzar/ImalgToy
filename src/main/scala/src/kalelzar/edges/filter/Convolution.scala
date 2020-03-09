@@ -1,13 +1,13 @@
-package src.kalelzar.edges
+package src.kalelzar.edges.filter
 
-import java.awt.image.BufferedImage
 import java.awt.Color
+import java.awt.image.BufferedImage
 
-class Convolution(x: Int, y: Int){
+class Convolution(x: Int, y: Int) {
   type Pixels = Seq[Seq[Color]]
 
-  if(x == 0 || y == 0) throw new IndexOutOfBoundsException(s"Cannot have a zero-length convolution matrix!")
-  if(x % 2 == 0 || y % 2 == 0) throw new IndexOutOfBoundsException(s"ConvolutionMatrix must have an odd amount of columns and rows!")
+  if (x == 0 || y == 0) throw new IndexOutOfBoundsException(s"Cannot have a zero-length convolution matrix!")
+  if (x % 2 == 0 || y % 2 == 0) throw new IndexOutOfBoundsException(s"ConvolutionMatrix must have an odd amount of columns and rows!")
 
   private var initialized = false
   private var matrix: Seq[Seq[Double]] = _
@@ -51,10 +51,10 @@ class Convolution(x: Int, y: Int){
           if(tx + dx >= 0 && tx + dx < img.getWidth){
             (-halfY to halfY).foreach{
               dy=>
-              if(ty + dy >= 0 && ty + dy < img.getHeight){
-                bsum += matrix(dx+halfX)(dy+halfY)*pixels(tx+dx)(ty+dy).getBlue
-                gsum += matrix(dx+halfX)(dy+halfY)*pixels(tx+dx)(ty+dy).getGreen
-                rsum += matrix(dx+halfX)(dy+halfY)*pixels(tx+dx)(ty+dy).getRed
+              if(ty + dy >= 0 && ty + dy < img.getHeight) {
+                bsum += matrix(halfX - dx)(halfY - dy) * pixels(tx + dx)(ty + dy).getBlue
+                gsum += matrix(halfX - dx)(halfY - dy) * pixels(tx + dx)(ty + dy).getGreen
+                rsum += matrix(halfX - dx)(halfY - dy) * pixels(tx + dx)(ty + dy).getRed
               }
             }
           }

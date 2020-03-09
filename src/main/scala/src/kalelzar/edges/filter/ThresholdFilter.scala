@@ -1,12 +1,12 @@
-package src.kalelzar.edges
+package src.kalelzar.edges.filter
 
 import java.awt.Color
 import java.awt.image.BufferedImage
 
 class ThresholdFilter(threshold: Int) extends ImageFilter {
 
-  private def thresholdChannel(i: Int): Int ={
-    if(i >= threshold) 255 else 0
+  private def thresholdChannel(i: Int): Int = {
+    if (i >= threshold) 255 else 0
   }
 
   protected def thresholdColor(color: Color): Color = {
